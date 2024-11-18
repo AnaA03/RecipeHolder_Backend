@@ -10,7 +10,7 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors')
 app.use(cors())
 
-const mysql      = require('mysql');
+const mysql = require('mysql');
 const connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
@@ -28,9 +28,9 @@ connection.connect((err) => {
 
 const jwtpass = 'sdfjhioerhfdsnoaidfjpergr fhrwifiowr dfif';
 
-app.get('/', function (req, res) {
+/* app.get('/', function (req, res) {
   res.send('Hello World')
-})
+}) */
 
 // api to show categories
 app.get("/categories", (req, res) => {
@@ -232,157 +232,6 @@ app.get('/get_recipe_by_id/:category_id',(req,res) => {
   })
 });
 
-// Get recipe link by category id
-app.get('/get_recipeLink_by_id/:recipe_id',(req,res) => {
-  const recipe_id = req.params.recipe_id;
-  const query = "SELECT recipe_link FROM category_detail WHERE recipe_id = ?";
-  connection.query(query,recipe_id,(err, result) => {
-      if(err){
-          console.log(err);
-          res.status(500).send({
-              success: false,
-              msg: 'Server Error',
-              data: []
-          })
-      } else {
-          res.send({
-              success: true,
-              msg: 'Success',
-              data: result
-          })
-      }
-  })
-});
-
-
-//api for login username and password
- app.post("/login",(req,res) => {
-   const username = req.body.username;
-   const password = req.body.password;
-  const query = `SELECT * FROM login WHERE username LIKE ? AND password LIKE ?`;
-  connection.query(query, [username, password], (err, result) => {
-      if(err) {
-          res.status(500).send(err);
-      } else {
-        if(result.length){
-          try {
-            const token = jwt.sign({
-              user: result[0]
-            },jwtpass, {
-              expiresIn: '1d'
-            });
-            res.status(200).send({
-              success: true,
-              msg: "Login Success",
-              data: token
-            })
-          } catch(err) {
-            console.log(err);
-            res.status(500).send({
-              success: false,
-              msg: "Server Error",
-              data: []
-            })
-          }
-        }  else {
-          res.status(404).send({
-            success: false,
-            msg: "Invalid Username or Password.",
-            data: []
-            }) 
-          } 
-          //res.status(200).send('User Added');
-      }
-  }) 
- //res.redirect('http://localhost:4200/home/')
-}); 
-
-// api to add username and password (SignUp api)
-app.post("/signup", (req, res) => {
-          const username = req.body.username;
-          const password =  req.body.password;
-  
-          const query = "INSERT INTO login (username,password) VALUES (?,?)";
-          connection.query(query, [username, password], (err,result) => {
-            if(err) {
-              res.status(500).send({
-                success: false,
-                msg: "Server Error",
-                data: []
-              });
-            } else {
-              const token = jwt.sign({
-                user: result.insertId
-              },jwtpass, {
-                expiresIn: '1d'
-              });
-              res.status(200).send({
-                success: true,
-                msg: "Login Success",
-                data: token
-              })
-/*               res.status(201).send({
-                success: true,
-                msg: "Success",
-                data: result.insertId
-              }) */
-            }
-          })
-        });
-
-// api to get All users
-app.get("/user/:user_id", (req, res) => {
-  const user_id = req.params.user_id;
-  const query = "SELECT * FROM login WHERE user_id=?"
-  connection.query(query, user_id, (err, result) => {
-    if(err) {
-      console.log(err);
-      res.status(500).send({
-        success: false,
-        msg: 'Server Error',
-        data: []
-      })
-    } else {
-      console.log(result);
-      res.send({
-        success: true,
-        msg: 'Success',
-        data: result
-      })
-    }
-  });
-});
-
-app.get('/get_category_user_id',(req,res) => {
-  const token = req.headers['token'];
-  try {
-    const decoded = jwt.verify(token, jwtpass);
-    const user_id = decoded.user.user_id;
-    const query = "SELECT * FROM category WHERE user_id = ?";
-    connection.query(query,[user_id],(err, result) => {
-      if(err) {
-        console.log(err);
-        res.status(500).send({
-          success: false,
-          msg: "Server Error",
-          data: []
-        })
-      } else {
-        res.status(200).send({
-          success: true,
-          msg: "Success",
-          data: result
-        })
-      }
-    })
-  } catch(err) {
-    res.status(401).send({
-      success: false,
-      msg:"Login Again",
-      data: []
-    })
-  }
-});
 
 // Get categories by userId
 app.get('/get_Allcategories_byId/:user_id',(req,res) => {
