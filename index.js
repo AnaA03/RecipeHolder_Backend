@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const port = 3000;
+const path = require('path');
 
 const bodyParser = require('body-parser')
 app.use(bodyParser.json())
@@ -31,6 +32,13 @@ const jwtpass = 'sdfjhioerhfdsnoaidfjpergr fhrwifiowr dfif';
 /* app.get('/', function (req, res) {
   res.send('Hello World')
 }) */
+
+/* var distDir = path.join(__dirname,"dist","MyRecipeHolder");
+app.use(express.static(distDir));
+
+app.get("/*",(req,res) => {
+  res.sendFile(path.join(__dirname,"dist","MyRecipeHolder","index.html"))
+}); */
 
 // api to show categories
 app.get("/categories", (req, res) => {
